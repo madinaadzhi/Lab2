@@ -1,5 +1,4 @@
 public class Cell {
-
     boolean isWallTop;
     boolean isWallLeft;
     private boolean visited;

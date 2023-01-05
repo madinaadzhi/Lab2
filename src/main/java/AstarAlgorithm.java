@@ -13,6 +13,7 @@ public class AstarAlgorithm {
     private Cell endCell;
     private Cell currentCell;
     private int stepCnt = 0;
+    private int impasseCnt = 0; // тупик
 
     public AstarAlgorithm(Maze maze) {
         this.cells = maze.getCells();
@@ -29,6 +30,10 @@ public class AstarAlgorithm {
         }
     }
 
+    public int getStepCnt() {
+        return stepCnt;
+    }
+
     public boolean isCompleted() {
         return completed;
     }
@@ -42,15 +47,26 @@ public class AstarAlgorithm {
         return null;
     }
 
+    public MazeSearchResult doSearch() {
+        long startTime = System.currentTimeMillis();
+        while (!isCompleted()) {
+            nextStep();
+        }
+        long endTime = System.currentTimeMillis();
+        return new MazeSearchResult(endTime - startTime, stepCnt, impasseCnt);
+    }
     public boolean nextStep() {
 
         if (!completed && !openList.isEmpty()) {
             stepCnt++;
-            System.out.println("Current step is: " + stepCnt);
+//            System.out.println("Current step is: " + stepCnt);
             currentCell = getCellWithMinF();
             openList.remove(currentCell);
-
             List<Cell> nextCellList = getCells(cells, currentCell.getRow(), currentCell.getCol());
+            if (nextCellList.size() == 1) {
+                impasseCnt++;
+            }
+
             for (Cell nextCell : nextCellList) {
                 if (!closedList.contains(nextCell)) {
                     if (nextCell == endCell) {
@@ -106,7 +122,6 @@ public class AstarAlgorithm {
         if (possibleCells.isEmpty()) {
             return null;
         }
-
         int index = random.nextInt(possibleCells.size());
         Cell nextCell = possibleCells.get(index);
         if (nextCell == right) {
@@ -141,7 +156,6 @@ public class AstarAlgorithm {
 
     private List<Cell> getCells(Cell[][] maze, int row, int col) {
         List<Cell> neighborCell = new ArrayList<Cell>();
-
         if (!maze[row][col].isWallLeft) {
             neighborCell.add(maze[row][col - 1]);
         }
@@ -156,7 +170,6 @@ public class AstarAlgorithm {
         if (notLastCol && !maze[row][col + 1].isWallLeft) {
             neighborCell.add(maze[row][col + 1]);
         }
-
         return neighborCell;
     }
 }
