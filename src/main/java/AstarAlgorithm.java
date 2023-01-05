@@ -12,6 +12,7 @@ public class AstarAlgorithm {
     private Cell startCell;
     private Cell endCell;
     private Cell currentCell;
+    private int stepCnt = 0;
 
     public AstarAlgorithm(Maze maze) {
         this.cells = maze.getCells();
@@ -28,6 +29,10 @@ public class AstarAlgorithm {
         }
     }
 
+    public boolean isCompleted() {
+        return completed;
+    }
+
     public Cell getCurrentCell() {
         return currentCell;
     }
@@ -38,7 +43,10 @@ public class AstarAlgorithm {
     }
 
     public boolean nextStep() {
+
         if (!completed && !openList.isEmpty()) {
+            stepCnt++;
+            System.out.println("Current step is: " + stepCnt);
             currentCell = getCellWithMinF();
             openList.remove(currentCell);
 

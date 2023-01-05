@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -23,7 +24,7 @@ public class MazeApp extends Application {
         Maze m = new Maze(maze);
         final AstarAlgorithm astarAlgorithm = new AstarAlgorithm(m);
 
-        Button btn = new Button("NextStep");
+        Button btn = new Button("A* Run");
         Button displayPath = new Button("DisplayPath");
         final VBox[] mazeBox = {buildMazeUI(maze, maze[0][0])};
         final VBox box = new VBox();
@@ -38,15 +39,28 @@ public class MazeApp extends Application {
         });
         btn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent actionEvent) {
-                System.out.println("we are here!");
-                astarAlgorithm.nextStep();
-                Cell currentCell = astarAlgorithm.getCurrentCell();
-                box.getChildren().remove(mazeBox[0]);
-                mazeBox[0] = buildMazeUI(maze, currentCell);
-                box.getChildren().addAll(mazeBox[0]);
+                new Thread(new Runnable() {
+                    public void run() {
+                        while (!astarAlgorithm.isCompleted()) {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                            }
+                            astarAlgorithm.nextStep();
+                            final Cell currentCell = astarAlgorithm.getCurrentCell();
+                            Platform.runLater(new Runnable() {
+                                public void run() {
+                                    box.getChildren().remove(mazeBox[0]);
+                                    mazeBox[0] = buildMazeUI(maze, currentCell);
+                                    box.getChildren().addAll(mazeBox[0]);
+
+                                }
+                            });
+                        }
+                    }
+                }).start();
             }
         });
-
         primaryStage.setScene(new Scene(box, 570, 570));
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -134,7 +148,6 @@ public class MazeApp extends Application {
             currentCell.setWallTop(false);
         }
         nextCell.setVisited(true);
-        System.out.println("" + currentCell.getRow() + ';' + currentCell.getCol() + " -> " + nextCell.getRow() + ';' + nextCell.getCol());
         return nextCell;
     }
 
