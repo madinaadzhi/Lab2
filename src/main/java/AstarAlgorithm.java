@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import static java.lang.Math.abs;
 
@@ -53,7 +52,12 @@ public class AstarAlgorithm {
             nextStep();
         }
         long endTime = System.currentTimeMillis();
-        return new MazeSearchResult(endTime - startTime, stepCnt, impasseCnt);
+        int pathCnt = 0;
+        while (currentCell.getParent() != null) {
+            pathCnt++;
+            currentCell = currentCell.getParent();
+        }
+        return new MazeSearchResult("A*", endTime - startTime, stepCnt, impasseCnt, pathCnt);
     }
     public boolean nextStep() {
 
@@ -62,7 +66,7 @@ public class AstarAlgorithm {
 //            System.out.println("Current step is: " + stepCnt);
             currentCell = getCellWithMinF();
             openList.remove(currentCell);
-            List<Cell> nextCellList = getCells(cells, currentCell.getRow(), currentCell.getCol());
+            List<Cell> nextCellList = getNeighborCells(cells, currentCell.getRow(), currentCell.getCol());
             if (nextCellList.size() == 1) {
                 impasseCnt++;
             }
@@ -110,51 +114,8 @@ public class AstarAlgorithm {
         return cellWithMinF;
     }
 
-    private List<Cell> getNextCell(Cell currentCell, Cell[][] maze) {
-        Random random = new Random();
-        List<Cell> possibleCells = new ArrayList<Cell>();
-        List<Cell> nextCells = new ArrayList<Cell>();
-        Cell right = getCell(maze, possibleCells, currentCell.getRow(), currentCell.getCol() + 1);
-        Cell left = getCell(maze, possibleCells, currentCell.getRow(), currentCell.getCol() - 1);
-        Cell top = getCell(maze, possibleCells, currentCell.getRow() - 1, currentCell.getCol());
-        Cell bottom = getCell(maze, possibleCells, currentCell.getRow() + 1, currentCell.getCol());
 
-        if (possibleCells.isEmpty()) {
-            return null;
-        }
-        int index = random.nextInt(possibleCells.size());
-        Cell nextCell = possibleCells.get(index);
-        if (nextCell == right) {
-            nextCell.setWallLeft(false);
-            nextCells.add(nextCell);
-        } else if (nextCell == bottom) {
-            nextCell.setWallTop(false);
-            nextCells.add(nextCell);
-        } else if (nextCell == left) {
-            currentCell.setWallLeft(false);
-            nextCells.add(nextCell);
-        } else {
-            currentCell.setWallTop(false);
-            nextCells.add(nextCell);
-        }
-        nextCell.setVisited(true);
-        System.out.println("" + currentCell.getRow() + ';' + currentCell.getCol() + " -> " + nextCell.getRow() + ';' + nextCell.getCol());
-        return nextCells;
-    }
-
-    private Cell getCell(Cell[][] maze, List<Cell> possibleCells, int row, int col) {
-        Cell right = null;
-        try {
-            right = maze[row][col];
-            if (!right.isVisited()) {
-                possibleCells.add(right);
-            }
-        } catch (Exception e) {
-        }
-        return right;
-    }
-
-    private List<Cell> getCells(Cell[][] maze, int row, int col) {
+    private List<Cell> getNeighborCells(Cell[][] maze, int row, int col) {
         List<Cell> neighborCell = new ArrayList<Cell>();
         if (!maze[row][col].isWallLeft) {
             neighborCell.add(maze[row][col - 1]);

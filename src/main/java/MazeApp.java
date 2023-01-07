@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -16,15 +17,17 @@ public class MazeApp extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception {
         MazeGenerator mazeGenerator = new MazeGenerator();
-        final Maze maze = mazeGenerator.generateMaze(6);
+        final Maze maze = mazeGenerator.generateMaze(10);
 
         final AstarAlgorithm astarAlgorithm = new AstarAlgorithm(maze);
+        final LdfsAlgorithm ldfsAlgorithm = new LdfsAlgorithm(maze, 11000);
 
-        Button btn = new Button("A* Run");
+        Button aStarBtn = new Button("A* Run");
+        Button ldfsBtn = new Button("LDFS Run");
         final VBox[] mazeBox = {buildMazeUI(maze.getCells(), maze.getCells()[0][0])};
         final VBox box = new VBox();
-        box.getChildren().addAll(btn, mazeBox[0]);
-        btn.setOnAction(new EventHandler<ActionEvent>() {
+        box.getChildren().addAll(aStarBtn, ldfsBtn, mazeBox[0]);
+        aStarBtn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent actionEvent) {
                 new Thread(new Runnable() {
                     public void run() {
@@ -48,6 +51,17 @@ public class MazeApp extends Application {
                 }).start();
             }
         });
+
+        ldfsBtn.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent actionEvent) {
+                ldfsAlgorithm.nextStep();
+                Cell currentCell = ldfsAlgorithm.getCurrCell();
+                box.getChildren().remove(mazeBox[0]);
+                mazeBox[0] = buildMazeUI(maze.getCells(), currentCell);
+                box.getChildren().addAll(mazeBox[0]);
+            }
+        });
+
         primaryStage.setScene(new Scene(box, 570, 570));
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -109,6 +123,12 @@ public class MazeApp extends Application {
         pane.setMaxHeight(25);
         pane.setMinWidth(25);
         pane.setMinHeight(25);
+
+        String gText = "";
+        if (cell.getG() != 0) {
+            gText = String.valueOf((int)cell.getG());
+        }
+        pane.getChildren().add(new Label(gText));
         return pane;
     }
 
