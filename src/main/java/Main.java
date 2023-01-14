@@ -7,34 +7,30 @@ public class Main {
         List<MazeSearchResult> astarResults = new ArrayList<MazeSearchResult>();
         List<MazeSearchResult> ldfsResults = new ArrayList<MazeSearchResult>();
         for (int i = 0; i < seriasCnt; i++) {
-            System.out.println("=====================Test #" + i + 1 + " ===================");
+            System.out.println("===================== Test #" + (i + 1) + " =====================");
             System.out.println("Maze generating...");
             Maze maze = MazeGenerator.generateMaze(300);
 
             System.out.println("Maze searching...");
-            final AstarAlgorithm astarAlgorithm = new AstarAlgorithm(maze);
+            final AstarAlgorithm astarAlgorithm = new AstarAlgorithm(maze, 50000);
             MazeSearchResult astartResult = astarAlgorithm.doSearch();
             astarResults.add(astartResult);
 
-            final LdfsAlgorithm ldfsAlgorithm = new LdfsAlgorithm(maze, 100000);
+            final LdfsAlgorithm ldfsAlgorithm = new LdfsAlgorithm(maze, 150000);
             MazeSearchResult ldfsResult = ldfsAlgorithm.doSearch();
             ldfsResults.add(ldfsResult);
         }
 
         System.out.println("");
-        System.out.println("========== RESULTS===============");
-
-        for(int i = 0; i < seriasCnt; i++) {
-            System.out.println("=====================Test #" + ( i + 1) + " ===================");
-
+        System.out.println("===================== RESULTS =====================");
+        for (int i = 0; i < seriasCnt; i++) {
+            System.out.println("===================== Test #" + (i + 1) + " =====================");
             System.out.println(astarResults.get(i));
             System.out.println(ldfsResults.get(i));
         }
 
         printSummary(astarResults, "A*");
         printSummary(ldfsResults, "LDFS");
-
-
     }
 
     private static void printSummary(List<MazeSearchResult> results, String title) {
@@ -55,9 +51,7 @@ public class Main {
         double avgTime = (double) totalTime / results.size();
         double avgPath = (double) pathCnt / results.size();
         System.out.println();
-        System.out.println("=====================Summary for " +
-                title +
-                " ===================");
+        System.out.println("===================== Summary for " + title + " =====================");
         System.out.println("Serias count: " + results.size());
         System.out.println("Average steps count: " + avgStep);
         System.out.println("Average impasse count: " + avgImpasse);

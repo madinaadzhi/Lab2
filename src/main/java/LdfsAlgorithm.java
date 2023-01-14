@@ -14,10 +14,6 @@ public class LdfsAlgorithm {
     private int impasseCnt = 0;
     private boolean lastStepWasBack = false;
 
-    public Stack<Cell> getStack() {
-        return stack;
-    }
-
     public LdfsAlgorithm(Maze maze, int depth) {
         this.cells = maze.getCells();
         this.endCell = cells[cells.length - 1][cells.length - 1];
@@ -31,10 +27,6 @@ public class LdfsAlgorithm {
             }
         }
         this.currCell.setVisited(true);
-    }
-
-    public boolean isCompleted() {
-        return completed;
     }
 
     public Cell getCurrCell() {
@@ -53,7 +45,7 @@ public class LdfsAlgorithm {
             currCell = currCell.getParent();
         }
 
-        return new MazeSearchResult("LDFS", endTime - startTime, stepCnt, impasseCnt, pathCnt);
+        return new MazeSearchResult("LDFS", endTime - startTime, stepCnt, impasseCnt, completed, pathCnt);
     }
 
     public boolean nextStep() {

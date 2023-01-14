@@ -10,9 +10,10 @@ public class MazeGenerator {
                 cells[i][j] = new Cell(true, true, j, i);
             }
         }
-         buildMaze(cells);
+        buildMaze(cells);
         return new Maze(cells);
     }
+
     private static void buildMaze(Cell[][] maze) {
         Cell currentCell = maze[0][0];
         currentCell.setVisited(true);
@@ -34,6 +35,7 @@ public class MazeGenerator {
             currentCell = nextCell;
         }
     }
+
     private static Cell getNextCell(Cell currentCell, Cell[][] maze) {
         Random random = new Random();
         List<Cell> possibleCells = new ArrayList<Cell>();
@@ -60,15 +62,16 @@ public class MazeGenerator {
         nextCell.setVisited(true);
         return nextCell;
     }
+
     private static Cell getCell(Cell[][] maze, List<Cell> possibleCells, int row, int col) {
-        Cell right = null;
+        Cell cell = null;
         try {
-            right = maze[row][col];
-            if (!right.isVisited()) {
-                possibleCells.add(right);
+            cell = maze[row][col];
+            if (!cell.isVisited()) {
+                possibleCells.add(cell);
             }
         } catch (Exception e) {
         }
-        return right;
+        return cell;
     }
 }

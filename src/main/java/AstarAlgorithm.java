@@ -13,11 +13,13 @@ public class AstarAlgorithm {
     private Cell currentCell;
     private int stepCnt = 0;
     private int impasseCnt = 0; // тупик
+    private int timeLimitInMs;
 
-    public AstarAlgorithm(Maze maze) {
+    public AstarAlgorithm(Maze maze, int timeLimitInMs) {
         this.cells = maze.getCells();
         this.startCell = cells[0][0];
         this.endCell = cells[cells.length - 1][cells.length - 1];
+        this.timeLimitInMs = timeLimitInMs;
         startCell.setF(0);
         startCell.setG(0);
         openList.add(startCell);
@@ -29,10 +31,6 @@ public class AstarAlgorithm {
         }
     }
 
-    public int getStepCnt() {
-        return stepCnt;
-    }
-
     public boolean isCompleted() {
         return completed;
     }
@@ -41,15 +39,13 @@ public class AstarAlgorithm {
         return currentCell;
     }
 
-    public MazeSearchResult getResult() {
-
-        return null;
-    }
-
     public MazeSearchResult doSearch() {
         long startTime = System.currentTimeMillis();
         while (!isCompleted()) {
             nextStep();
+            if (System.currentTimeMillis() - startTime >= timeLimitInMs) {
+                break;
+            }
         }
         long endTime = System.currentTimeMillis();
         int pathCnt = 0;
@@ -57,13 +53,12 @@ public class AstarAlgorithm {
             pathCnt++;
             currentCell = currentCell.getParent();
         }
-        return new MazeSearchResult("A*", endTime - startTime, stepCnt, impasseCnt, pathCnt);
+        return new MazeSearchResult("A*", endTime - startTime, stepCnt, impasseCnt, completed, pathCnt);
     }
-    public boolean nextStep() {
 
+    public boolean nextStep() {
         if (!completed && !openList.isEmpty()) {
             stepCnt++;
-//            System.out.println("Current step is: " + stepCnt);
             currentCell = getCellWithMinF();
             openList.remove(currentCell);
             List<Cell> nextCellList = getNeighborCells(cells, currentCell.getRow(), currentCell.getCol());
@@ -113,7 +108,6 @@ public class AstarAlgorithm {
         }
         return cellWithMinF;
     }
-
 
     private List<Cell> getNeighborCells(Cell[][] maze, int row, int col) {
         List<Cell> neighborCell = new ArrayList<Cell>();

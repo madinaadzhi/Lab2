@@ -38,11 +38,6 @@ public class Cell {
     public void setG(double g) {
         this.g = g;
     }
-
-    public double getH() {
-        return h;
-    }
-
     public void setH(double h) {
         this.h = h;
     }
@@ -50,17 +45,8 @@ public class Cell {
     public int getCol() {
         return col;
     }
-
-    public void setCol(int col) {
-        this.col = col;
-    }
-
     public int getRow() {
         return row;
-    }
-
-    public void setRow(int row) {
-        this.row = row;
     }
 
     public boolean isVisited() {
@@ -71,18 +57,9 @@ public class Cell {
         this.visited = visited;
     }
 
-    public boolean isWallTop() {
-        return isWallTop;
-    }
-
     public void setWallTop(boolean wallTop) {
         isWallTop = wallTop;
     }
-
-    public boolean isWallLeft() {
-        return isWallLeft;
-    }
-
     public void setWallLeft(boolean wallLeft) {
         isWallLeft = wallLeft;
     }

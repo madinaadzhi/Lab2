@@ -16,17 +16,28 @@ import java.util.List;
 public class MazeApp extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception {
+        primaryStage.setTitle("Maze");
         MazeGenerator mazeGenerator = new MazeGenerator();
-        final Maze maze = mazeGenerator.generateMaze(10);
+        final Maze maze = mazeGenerator.generateMaze(15);
 
-        final AstarAlgorithm astarAlgorithm = new AstarAlgorithm(maze);
+        final AstarAlgorithm astarAlgorithm = new AstarAlgorithm(maze, 10000);
         final LdfsAlgorithm ldfsAlgorithm = new LdfsAlgorithm(maze, 11000);
 
-        Button aStarBtn = new Button("A* Run");
-        Button ldfsBtn = new Button("LDFS Run");
+        Button ldfsBtn = new Button("LDFS");
+        Button aStarBtn = new Button("A*");
+        ldfsBtn.setStyle("-fx-font-size: 18; -fx-font-family: 'Verdana';  -fx-background-color: #b4a7d6");
+        ldfsBtn.setMaxSize(100, 50);
+        ldfsBtn.setMinSize(100, 50);
+
+        aStarBtn.setStyle("-fx-font-size: 18; -fx-font-family: 'Verdana';  -fx-background-color: #b4a7d6");
+        aStarBtn.setMaxSize(100, 50);
+        aStarBtn.setMinSize(100, 50);
+
+        HBox btns = new HBox(50, ldfsBtn, aStarBtn);
+
         final VBox[] mazeBox = {buildMazeUI(maze.getCells(), maze.getCells()[0][0])};
         final VBox box = new VBox();
-        box.getChildren().addAll(aStarBtn, ldfsBtn, mazeBox[0]);
+        box.getChildren().addAll(btns, mazeBox[0]);
         aStarBtn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent actionEvent) {
                 new Thread(new Runnable() {
@@ -62,7 +73,7 @@ public class MazeApp extends Application {
             }
         });
 
-        primaryStage.setScene(new Scene(box, 570, 570));
+        primaryStage.setScene(new Scene(box, 450, 500));
         primaryStage.setResizable(false);
         primaryStage.show();
     }
@@ -105,28 +116,34 @@ public class MazeApp extends Application {
 
     private HBox buildCell(Cell cell, boolean currCell, boolean pathCell) {
         HBox pane = new HBox();
-        String borderConfig = (cell.isWallTop ? "3" : "0") + " 0 0 " + (cell.isWallLeft ? "3" : "0");
+        String borderConfig;
+        if (cell.isWallTop) {
+            borderConfig = "3" + " 0 0 " + (cell.isWallLeft ? "3" : "0");
+        } else {
+            borderConfig = "0" + " 0 0 " + (cell.isWallLeft ? "3" : "0");
+        }
+
         String cellColor;
         if (pathCell) {
-            cellColor = "green";
+            cellColor = "#9FA365";  //green
         } else if (currCell) {
-            cellColor = "red";
+            cellColor = "#BA1111"; //red
         } else {
             if (cell.isVisited()) {
-                cellColor = "grey";
+                cellColor = "#63717f";  //grey
             } else {
-                cellColor = "yellow";
+                cellColor = "#C6E2FF";  //blue
             }
         }
         pane.setStyle("-fx-background-color: " + cellColor + "; -fx-border-color: black; -fx-border-width: " + borderConfig);
-        pane.setMaxWidth(25);
-        pane.setMaxHeight(25);
-        pane.setMinWidth(25);
-        pane.setMinHeight(25);
+        pane.setMaxWidth(30);
+        pane.setMaxHeight(30);
+        pane.setMinWidth(30);
+        pane.setMinHeight(30);
 
         String gText = "";
         if (cell.getG() != 0) {
-            gText = String.valueOf((int)cell.getG());
+            gText = String.valueOf((int) cell.getG());
         }
         pane.getChildren().add(new Label(gText));
         return pane;
